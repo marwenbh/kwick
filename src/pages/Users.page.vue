@@ -1,56 +1,63 @@
 <template>
-  <div >
-    <v-btn v-if="isLogOut==false" @click="logOut"  color="error">Déconnexion</v-btn>
-    <v-card >
+  <div class="ml-2">
+    <v-btn v-if="isLogOut==false" @click="logOut()"  color="error" class="mt-2">Déconnexion</v-btn>
       <v-col>
         <v-row no-gutters>
-          <div class="col-2">
-            <v-container>
-              <v-row >
-                <v-card>
-                  <v-card-text>
-                    <div class="font-weight-bold ml-8 mb-2">
-                      Utilisateurs connectés
-                    </div>
-                    <v-timeline
-                      align-top
-                      dense
+          <v-col  class="col-4" >
+            <v-row class="mt-3">
+              <v-card>
+                <v-card-title class="blue white--text">
+                  <span class="headline">Utilisateurs connectés</span>
+                  <v-spacer></v-spacer>
+                </v-card-title>
+                <v-card-text>
+                  <v-responsive
+                    class="overflow-y-auto"
+                    max-height="500"
+                  >
+                    <v-lazy
+                      v-model="isActive"
+                      :options="{
+                        threshold: .5
+                      }"
+                      min-height="50"
                     >
-                      <v-timeline-item
-                        v-for="user in users"
-                        :key="user"
-                        small
+                      <v-timeline
+                        align-top
+                        dense
                       >
-                        <div>
-                          <div class="font-weight-normal">
-                            <strong>{{ user}}</strong>
-                          </div>
-                        </div>
-                      </v-timeline-item>
-                    </v-timeline>
-                  </v-card-text>
-                </v-card>
-              </v-row>
-            </v-container>
-          </div>
-          <div class="col-2">
+                        <v-timeline-item
+                          v-for="user in users"
+                          :key="user"
+                          small
+                        >
+                          <strong>{{ user}}</strong>
+                        </v-timeline-item>
+                      </v-timeline>
+                    </v-lazy>
+                  </v-responsive>
+                </v-card-text>
+              </v-card>
+            </v-row>  
+          </v-col >
+          <v-col class="col-2">
             <v-select
               v-model="select"
               :items="items"
               label="Période"
               required
             ></v-select>
-          </div>
-          <div class="col-8">
+          </v-col >
+          <v-col  class="col-6">
             <Conversation></Conversation>
-          </div>
+          </v-col >
         </v-row>
       </v-col>
-    </v-card>
   </div>
 </template>
 <script src="https://unpkg.com/vue@2.2.4/dist/vue.js"></script>
 <script>
+// import
 import { mapState } from 'vuex'
 import Conversation from '../components/kwick/Conversation'
         
@@ -58,7 +65,7 @@ import Conversation from '../components/kwick/Conversation'
       data () {
           return {
               right: null,
-              info:"",
+              isActive:false,
               items: [
                 '10 minutes',
                 '60 minutes',
@@ -70,6 +77,7 @@ import Conversation from '../components/kwick/Conversation'
             }
             
       },
+      // appel de composants
       components:{Conversation},
       watch:{
         select(){
@@ -86,14 +94,16 @@ import Conversation from '../components/kwick/Conversation'
       },
       methods:{
         logOut () {
+          // Dispatche d'une action déclaré dans le store
           this.$store.dispatch('kwick/fetchLogOut')
-          // this.$router.push('Kwick')
+          this.$router.push('kwick')
                  
         },
         getMessages(){
           console.log(this.select)
           switch(this.select){
             case 'tout':
+              // Dispatcher une action de Store
               this.$store.dispatch('kwick/fetchTimeMessages','0')
               break
             case '10 minutes':

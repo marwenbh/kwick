@@ -36,7 +36,7 @@ const mutations = {
     state.isLogOut=false
   },
   logOut(state) {
-    state.isSubscribe=false
+    state.isSubscribe=true
     state.isLogIn= false
     state.isLogOut=true
     state.subscribed=false
@@ -60,7 +60,7 @@ const mutations = {
   setMessages(state,data){
     let messageTab=[]
     let j=0
-    for (let i=0; i < data.length; i++) {
+    for (let i=data.length-1; i > 0; i--) {
       messageTab[j] = {
         'user':data[i].user_name,'message':data[i].content,
         'time':new Date(data[i].timestamp*1000).toLocaleTimeString("fr-FR"),
@@ -88,6 +88,7 @@ const mutations = {
 }
 
 const actions = {
+  // Requêtte d'inscription
   fetchSubscribe({commit},data){
     fetch(`http://greenvelvet.alwaysdata.net/kwick/api/signup/${data.user}/${data.password}`)
     .then(res => {
@@ -95,18 +96,17 @@ const actions = {
     })
     .then(res =>{
       if (res.result.status=="failure"){
+        // Execution du pop erreur selon l'erreur
         commit('setPopUp',{'status':true,'message':"L'identifiant existe déjà"})
       }else{
         commit('setSubscribed', true)
         commit('logIn')
       }
+    }).catch(()=>{
+      // console.log('erreur Inscription');
     })
-      
-    .catch(() => {
-      // commit('errorOccured', true)
-    })
-
   },
+  //Requette de connexion
   fetchLogIn({commit,dispatch},data){
     fetch(`http://greenvelvet.alwaysdata.net/kwick/api/login/${data.user}/${data.password}`)
     .then(res=>{
@@ -120,13 +120,14 @@ const actions = {
 
       }
       else{
+        // Execution du pop erreur selon l'erreur
         commit('setPopUp',{'status':true,'message':"Identification erroné"}) 
       }
-      
     }).catch(()=>{
-      // commit('errorOccured', true)
+      // console.log('erreur Connexion');
     })
   },
+  //Récupération des utilisateurs connectés
   fetchConnectedUsers({commit},token){
     fetch(`http://greenvelvet.alwaysdata.net/kwick/api/user/logged/${token}`)
     .then(res=>{
@@ -136,9 +137,10 @@ const actions = {
         commit('setUsers',res.result.user)
       }
     }).catch(()=>{
-      // console.log('error users');
+      // console.log('erreur Utilisateurs connectés');
     })
   },
+  //Récupération des messages
   fetchMessages({commit},data){
     fetch(`http://greenvelvet.alwaysdata.net/kwick/api/talk/list/${data.token}/${data.timestamp}`)
     .then(res=>{
@@ -148,9 +150,10 @@ const actions = {
         commit('setMessages',res.result.talk)
       }
     }).catch(()=>{
-      // console.log('error users');
+      // console.log('erreur Messages');
     })
   },
+  //Envoi de message
   postMessage({getters,dispatch},message){
     fetch(`http://greenvelvet.alwaysdata.net/kwick/api/say/${getters.getUser().token}/${getters.getUser().id}/${message}`)
     .then(res => {
@@ -160,20 +163,24 @@ const actions = {
     .then(() =>{
       dispatch('fetchMessages',{'token':getters.getUser().token,'timestamp':getters.getTimestamp()})
     })
-      
-    .catch(() => {
-      // commit('errorOccured', true)
-    })
-
-  },
-  fetchLogOut({commit,getters}){
-    fetch(`http://greenvelvet.alwaysdata.net/kwick/logout/${getters.getUser().token}/${getters.getUser().id}`)
-    .then(res=>{
-      console.log(res);
-      commit('logOut')
-      commit('isLoged',false)
+    .catch(()=>{
+      // console.log('erreur envoie de message');
     })
   },
+  //Déconnexion
+  fetchLogOut({commit}){
+    commit('logOut')
+    commit('isLoged',false)
+    // fetch(`http://greenvelvet.alwaysdata.net/kwick/logout/${getters.getUser().token}/${getters.getUser().id}`)
+    // .then(res=>{
+    //   console.log(res);
+    
+    // })
+    // .catch(()=>{
+    //   // console.log('error users');
+    // })
+  },
+  //Recupération des messages selon la période sélectionnée
   fetchTimeMessages({commit,dispatch,getters},data){
     let time=data!='0'? Math.round((new Date().getTime()-data*1000)/1000):'0'
     commit('setTimestamp',time)

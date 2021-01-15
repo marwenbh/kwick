@@ -1,16 +1,18 @@
 <template>
   <v-app>
     <v-main>
-      <v-card>
-        <Header></Header>
-        <router-view/>
-        <Footer></Footer>
-      </v-card>
+      <!-- Affichage de l'entête -->
+      <Header></Header>
+      <!-- Affichage selon la route -->
+      <router-view/>
+      <!-- Affichage du pied de l'aplication -->
+      <Footer></Footer>
     </v-main>
   </v-app>
 </template>
 
 <script>
+// les import
 import Footer from './components/footer/foot'
 import Header from './components/header/Header'
 
@@ -20,13 +22,9 @@ export default {
   components: {
     Header,
     Footer
-  },
-
-  data: () => ({
-  }),
+  }
 };
 </script>
-
 <style land="scss" scoped>
 @import '../src/assets/scss/style.scss';
 </style>

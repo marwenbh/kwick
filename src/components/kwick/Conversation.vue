@@ -1,12 +1,10 @@
 <template>
   <v-container>
     <v-card>
-      <!-- <v-list-item-title class="font-weight-bold" >
-      Messages
-      </v-list-item-title > -->
-      <div class="font-weight-bold ml-8 mb-2">
-        Messages
-      </div>
+      <v-card-title class="blue white--text">
+        <span class="headline">Messages</span>
+        <v-spacer></v-spacer>
+      </v-card-title>
       <v-responsive
         class="overflow-y-auto"
         max-height="400"
@@ -19,15 +17,15 @@
           min-height="200"
         >
           <v-card>
-        <v-divider></v-divider>
+            <v-divider></v-divider>
             <v-list v-for="msg in messages" :key="msg.cpt" class="font-weight-bold mt-2 ml-2 mr-2">
               <v-card 
-                elevation="24"
+                elevation="18"
                 shaped>     
                 <v-card-title class="grey lighten-4">
-                  <strong>{{msg.user}}</strong>
-                </v-card-title>
-                  <v-card>{{msg.message}}</v-card>
+                  <span>{{msg.message}}</span> 
+                </v-card-title >
+                <div class="d-flex"><strong>{{msg.user}}</strong><span>@{{msg.time}}</span></div>
               </v-card>
             </v-list>
           </v-card>
@@ -53,7 +51,7 @@ import { mapState } from 'vuex'
 
     data: () => ({
       isActive: false,
-      message: '',
+      message: ' ',
       messageRules: [
         v => (v.length <=140) || 'Maximum 140 caractères']
     }),
